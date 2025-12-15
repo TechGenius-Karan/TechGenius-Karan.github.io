@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<title>Quote Generator</title>
+</head>
+<body>
+		<!-- Toggle Button -->
+	<div class="toggle-container">
+	  <input type="checkbox" id="modeToggle" onclick="toggleMode()" />
+	  <label for="modeToggle" class="toggle-label">
+	    <span class="toggle-ball">🌙</span>
+	  </label>
+	</div>
+	<h1>This is a quote generator webpage</h1>
+	<hr>
+<div>
+	<p id="quote">This is where the quote will appear</p>
+</div>
+	<button onclick="newQuote()">Generate</button>
+	<button onclick="copyQuote()" id="copybtn">Copy</button>
+
+<hr class="divider">
+<h2 class="category-title">CATEGORIES</h2>
+
+<div class="category-buttons">
+  <button class="cat-btn" data-category="Motivation">Motivation</button>
+  <button class="cat-btn" data-category="Life">Life</button>
+  <button class="cat-btn" data-category="Success">Success</button>
+  <button class="cat-btn" data-category="Wisdom">Wisdom</button>
+  <button class="cat-btn" data-category="Happiness">Happiness</button>
+</div>
+<script src="index.js"></script>
+</body>
+</html>
