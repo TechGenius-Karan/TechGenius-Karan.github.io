@@ -1,14 +1,5 @@
-let quotes = [
-  { text: "The best way to get started is to quit talking and begin doing.", author: "~ Walt Disney" },
-  { text: "Don’t let yesterday take up too much of today.", author: "~ Will Rogers" },
-  { text: "It’s not whether you get knocked down, it’s whether you get up.", author: "~ Vince Lombardi" },
-  { text: "If you are working on something exciting, it will keep you motivated.", author: "~ Unknown" },
-  { text: "Success doesn’t come to you, you go to it.", author: "~ Marva Collins" },
-  { text: "Life is like a box of chocolates, you never know what you're going to get.", author: "~ Forrest Gump" },
-  { text: "If you are going through hell, keep going.", author: "~ Winston Churchill" },
-  { text: "If at first you don't succeed, try, try again.", author: "~ William Edward Hickson" },
-  { text: "Life is about making an impact, not making an income.", author: "~ Kevin Kruse" }
-];
+let quotes = [];
+let API_URL = "https://quote-generator-5qei.onrender.com";
 
 let colors = [
   "#49B587", "#FF6F61", "#FFD700", "#6A5ACD", "#FF8C00",
@@ -27,6 +18,10 @@ let usedColours = [];
 
 
 function newQuote() {
+  if (quotes.length === 0) return;
+  if (usedQuotes.length === quotes.length) {
+    usedQuotes = [];
+  }
 
   let quoteIndex = Math.floor(Math.random() * quotes.length);
     while (usedQuotes.includes(quoteIndex)) {
@@ -42,10 +37,6 @@ function newQuote() {
   quoteElem.classList.remove("fade"); // reset if still on
   void quoteElem.offsetWidth; 
   quoteElem.classList.add("fade");
-
-  if (usedQuotes.length === quotes.length) {
-    usedQuotes = [];
-  }
 
   //background colour changing
 
@@ -93,19 +84,46 @@ function toggleMode() {
 let selectedCategory = null;
 
 document.querySelectorAll(".cat-btn").forEach(btn => {
-  btn.addEventListener("click", function() {
-    // Deselect if same button is clicked again
-    if (selectedCategory === this.dataset.category) {
+  btn.addEventListener("click", () => {
+    const category = btn.dataset.category;
+    const isSame = selectedCategory === category;
+
+    // Clear all active states
+    document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+
+    if (isSame) {
+      // Deselect → go back to random
       selectedCategory = null;
-      this.classList.remove("active");
+      fetchQuotes();
     } else {
-      // Clear previous selection
-      document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
-      selectedCategory = this.dataset.category;
-      this.classList.add("active");
+      // Select new category
+      selectedCategory = category;
+      btn.classList.add("active");
+      fetchQuotes(category);
     }
 
-    // Debug check
     console.log("Selected category:", selectedCategory);
   });
 });
+
+
+//fetching quotes from backend
+
+async function fetchQuotes(category = null) {
+  try {
+    let url = category
+      ? `${API_URL}/quotes/category/${category}`
+      : `${API_URL}/quotes`;
+
+    const res = await fetch(url);
+    quotes = await res.json();
+
+    usedQuotes = []; // reset used quotes when new data loads
+    usedColours = [];
+    newQuote();
+  } catch (err) {
+    console.error("Backend not available:", err);
+  }
+}
+
+fetchQuotes();
