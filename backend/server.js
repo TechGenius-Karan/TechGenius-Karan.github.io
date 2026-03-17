@@ -3,14 +3,9 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Quote from "./models/Quote.js";
-import OpenAI from "openai";
 import axios from "axios";
 
 dotenv.config();
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 const app = express();
 app.use(cors());
@@ -104,7 +99,7 @@ app.post("/gemini-quote", async (req, res) => {
     const prompt = `Generate a short, original, and inspiring quote about "${phrase}". Make it feel like something a thought leader would say — specific, actionable, and memorable. Keep it under 25 words. Return only the quote text, no quotation marks, no attribution.`;
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         contents: [{ parts: [{ text: prompt }] }],
       }
