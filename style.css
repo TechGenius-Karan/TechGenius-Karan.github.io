@@ -6,17 +6,28 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 100vh;
+	min-height: 100vh;
 	flex-direction:column;
 	font-family: Arial, sans-serif;
   background: #20B2AA;
   color: #000;
   transition: background-color 0.45s ease, color 0.3s ease;
+  padding: 40px 20px;
+  box-sizing: border-box;
 }
 
 hr {
-  width: 50%;      
-  margin: 20px auto; 
+  width: 50%;
+  margin: 20px auto;
+  border: none;
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.divider {
+  width: 80%;
+  border: none;
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
+  opacity: 1;
 }
 
 h1 {
@@ -52,7 +63,6 @@ button {
 
 button:hover {
 	cursor:pointer;
-	fill-opacity: 0.8;
 	background: #333;
 	color: #FB9B4B;
 	transform: scale(1.05);
@@ -194,15 +204,9 @@ button:hover {
   }
 }
 
-/*CATEGORIES SECRTION
+/* CATEGORIES SECTION */
 
 /* Divider and title */
-.divider {
-  margin: 40px auto 10px;
-  width: 80%;
-  border: 1px solid #ccc;
-  opacity: 0.3;
-}
 
 .category-title {
   text-align: center;
@@ -234,6 +238,10 @@ button:hover {
   font-family: "Poppins", sans-serif;
   font-weight: 500;
   transition: all 0.3s ease;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cat-btn:hover {
@@ -267,4 +275,114 @@ body.dark-mode .cat-btn.active {
   background-color: #FFD700; /* gold stays same */
   color: #111; /* strong contrast */
   box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+}
+
+
+/* AI QUOTE GENERATOR SECTION */
+
+.ai-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 60px;
+}
+
+.ai-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#clear-btn {
+  display: none;
+  position: absolute;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #aaa;
+  color: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  transition: background 0.2s ease;
+}
+
+#clear-btn:hover {
+  background: #888;
+  transform: none;
+}
+
+body.dark-mode #clear-btn {
+  background: #666;
+}
+
+body.dark-mode #clear-btn:hover {
+  background: #888;
+}
+
+#ai-input {
+  width: 300px;
+  padding: 12px 40px 12px 18px;
+  font-size: 1rem;
+  font-family: "Poppins", sans-serif;
+  border: 2px solid #ccc;
+  border-radius: 30px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.85);
+  color: #222;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+#ai-input:focus {
+  border-color: #49B587;
+  box-shadow: 0 0 8px rgba(73, 181, 135, 0.4);
+}
+
+#ai-btn {
+  width: auto;
+  height: auto;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  border-radius: 30px;
+  background-color: #6A5ACD;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#ai-btn:hover {
+  background-color: #4B3DB5;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+#ai-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+body.dark-mode #ai-input {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f0f0f0;
+  border-color: #555;
+}
+
+body.dark-mode #ai-input:focus {
+  border-color: #49B587;
+}
+
+body.dark-mode #ai-btn {
+  background-color: #6A5ACD;
+  color: #fff;
 }

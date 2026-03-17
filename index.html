@@ -3,6 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<title>Quote Generator</title>
 </head>
@@ -32,6 +34,16 @@
   <button class="cat-btn" data-category="Wisdom">Wisdom</button>
   <button class="cat-btn" data-category="Happiness">Happiness</button>
 </div>
+<hr class="divider">
+<h2 class="category-title">AI QUOTE GENERATOR</h2>
+<div class="ai-section">
+  <div class="ai-input-wrapper">
+    <input type="text" id="ai-input" placeholder='e.g. "business motivation"' maxlength="80" oninput="toggleClearBtn()" />
+    <button id="clear-btn" onclick="clearAIInput()" aria-label="Clear input">&#x2715;</button>
+  </div>
+  <button id="ai-btn" onclick="generateAIQuote()">Ask Gemini</button>
+</div>
+
 <script src="index.js"></script>
 </body>
 </html>

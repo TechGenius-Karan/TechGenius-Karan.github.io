@@ -23,10 +23,8 @@ function newQuote() {
     usedQuotes = [];
   }
 
-  let quoteIndex = Math.floor(Math.random() * quotes.length);
-    while (usedQuotes.includes(quoteIndex)) {
-    quoteIndex = Math.floor(Math.random() * quotes.length);
-  }
+  const available = quotes.map((_, i) => i).filter(i => !usedQuotes.includes(i));
+  const quoteIndex = available[Math.floor(Math.random() * available.length)];
   usedQuotes.push(quoteIndex);
 
   let quote = quotes[quoteIndex];
@@ -38,19 +36,16 @@ function newQuote() {
   void quoteElem.offsetWidth; 
   quoteElem.classList.add("fade");
 
-  //background colour changing
+  changeBackground();
+}
 
+function changeBackground() {
   let palette = darkMode ? darkColors : colors;
-  let randomIndex = Math.floor(Math.random() * palette.length);
-    while (usedColours.includes(randomIndex)) {
-      randomIndex = Math.floor(Math.random() * palette.length);
-    }
+  const available = palette.map((_, i) => i).filter(i => !usedColours.includes(i));
+  const randomIndex = available[Math.floor(Math.random() * available.length)];
   usedColours.push(randomIndex);
-
   document.body.style.backgroundColor = palette[randomIndex];
-  if(usedColours.length === palette.length) {
-    usedColours = [];
-  }
+  if (usedColours.length === palette.length) usedColours = [];
 }
 
 function copyQuote() {
@@ -129,16 +124,52 @@ async function fetchQuotes(category = null) {
 fetchQuotes();
 
 
-async function testAI() {
-  const res = await fetch(`${API_URL}/ai-quote`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      category: "Motivation",
-      topic: "discipline"
-    })
-  });
+function toggleClearBtn() {
+  const input = document.getElementById("ai-input");
+  const clearBtn = document.getElementById("clear-btn");
+  clearBtn.style.display = input.value.length > 0 ? "flex" : "none";
+}
 
-  const data = await res.json();
-  console.log(data);
+function clearAIInput() {
+  document.getElementById("ai-input").value = "";
+  document.getElementById("clear-btn").style.display = "none";
+  document.getElementById("ai-input").focus();
+}
+
+async function generateAIQuote() {
+  const phrase = document.getElementById("ai-input").value.trim();
+  if (!phrase) return;
+
+  const aiBtn = document.getElementById("ai-btn");
+  aiBtn.textContent = "Generating...";
+  aiBtn.disabled = true;
+
+  try {
+    const res = await fetch(`${API_URL}/gemini-quote`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phrase })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      document.getElementById("quote").innerHTML = "Could not generate a quote. Try again.";
+      return;
+    }
+
+    const quoteElem = document.getElementById("quote");
+    quoteElem.innerHTML = `"${data.text}" <span class="author">${data.author}</span>`;
+    quoteElem.classList.remove("fade");
+    void quoteElem.offsetWidth;
+    quoteElem.classList.add("fade");
+
+    changeBackground();
+  } catch (err) {
+    console.error("AI quote error:", err);
+    document.getElementById("quote").innerHTML = "Could not reach AI. Please try again.";
+  } finally {
+    aiBtn.textContent = "Ask Gemini";
+    aiBtn.disabled = false;
+  }
 }

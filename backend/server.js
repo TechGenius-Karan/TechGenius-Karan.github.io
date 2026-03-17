@@ -6,6 +6,8 @@ import Quote from "./models/Quote.js";
 import OpenAI from "openai";
 import axios from "axios";
 
+dotenv.config();
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -16,12 +18,12 @@ app.use(express.json());
 
 app.listen(5000, () => console.log("Server running on port 5000"));
 
-
-dotenv.config();
-
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+  .catch(err => {
+    console.error("MongoDB connection failed:", err.message);
+    process.exit(1);
+  });
 
 app.get("/quotes", async (req, res) => {
 	try {
@@ -87,6 +89,41 @@ app.post("/ai-quote", async (req, res) => {
   } catch (error) {
     console.error("HF Error:", error.response?.data || error.message);
     res.status(500).json({ error: "AI generation failed" });
+  }
+});
+
+
+app.post("/gemini-quote", async (req, res) => {
+  try {
+    const { phrase } = req.body;
+
+    if (!phrase) {
+      return res.status(400).json({ error: "Phrase required" });
+    }
+
+    const prompt = `Generate a short, original, and inspiring quote about "${phrase}". Make it feel like something a thought leader would say — specific, actionable, and memorable. Keep it under 25 words. Return only the quote text, no quotation marks, no attribution.`;
+
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        contents: [{ parts: [{ text: prompt }] }],
+      }
+    );
+
+    const aiQuote = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!aiQuote) {
+      return res.status(500).json({ error: "Gemini returned no content" });
+    }
+
+    res.json({
+      text: aiQuote.trim(),
+      author: "Gemini AI",
+    });
+
+  } catch (error) {
+    console.error("Gemini Error:", error.response?.data || error.message);
+    res.status(500).json({ error: "Gemini quote generation failed" });
   }
 });
 
