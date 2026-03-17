@@ -154,6 +154,7 @@ async function generateAIQuote() {
     const data = await res.json();
 
     if (data.error) {
+      console.error("Gemini API error:", data.error);
       document.getElementById("quote").innerHTML = "Could not generate a quote. Try again.";
       return;
     }

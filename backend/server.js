@@ -122,8 +122,9 @@ app.post("/gemini-quote", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Gemini Error:", error.response?.data || error.message);
-    res.status(500).json({ error: "Gemini quote generation failed" });
+    const detail = error.response?.data?.error?.message || error.message;
+    console.error("Gemini Error:", detail);
+    res.status(500).json({ error: detail });
   }
 });
 
