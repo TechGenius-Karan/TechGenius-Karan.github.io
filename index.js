@@ -170,7 +170,18 @@ async function generateAIQuote() {
     console.error("AI quote error:", err);
     document.getElementById("quote").innerHTML = "Could not reach AI. Please try again.";
   } finally {
-    aiBtn.textContent = "Ask Gemini";
-    aiBtn.disabled = false;
+    let countdown = 10;
+    aiBtn.disabled = true;
+    aiBtn.textContent = `Wait ${countdown}s`;
+    const timer = setInterval(() => {
+      countdown--;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        aiBtn.textContent = "Ask Gemini";
+        aiBtn.disabled = false;
+      } else {
+        aiBtn.textContent = `Wait ${countdown}s`;
+      }
+    }, 1000);
   }
 }

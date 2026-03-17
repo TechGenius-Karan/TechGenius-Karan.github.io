@@ -104,7 +104,7 @@ app.post("/gemini-quote", async (req, res) => {
     const prompt = `Generate a short, original, and inspiring quote about "${phrase}". Make it feel like something a thought leader would say — specific, actionable, and memorable. Keep it under 25 words. Return only the quote text, no quotation marks, no attribution.`;
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         contents: [{ parts: [{ text: prompt }] }],
       }
