@@ -42,23 +42,21 @@ p {
 	margin-bottom:40px;
 	margin-top:40px;
 	font-size:30px;
-	color:purple;
+	color: #1a1a1a;
 	font-weight:bold;
 }
 
 button {
-	font-size:20px;
-	text-align:center;
-	margin-left:auto;
-	margin-right:auto;
-	width:120px;
-	height:60px;
-	padding:14px;
+	font-size: 20px;
+	margin: 0 auto;
+	width: 120px;
+	height: 60px;
+	padding: 14px;
 	border-radius: 15px;
-  border:none;
-	cursor:pointer;
+	border: none;
+	cursor: pointer;
 	background-color: #FB9B4B;
-	transition:transform 0.45s;
+	transition: transform 0.45s;
 }
 
 button:hover {
@@ -81,16 +79,15 @@ button:hover {
   display: block;
   margin-top: 10px;
   font-style: italic;
-  color: purple;
+  color: rgba(0, 0, 0, 0.55);
   font-size:0.85em;
 }
 
 #copybtn {
   margin: 8px;
-  width:80px;
-  height:45px;
-  font-size:16px;
-  text-align:center;
+  width: 80px;
+  height: 45px;
+  font-size: 16px;
 }
 
 #copybtn:last-of-type {
@@ -215,6 +212,10 @@ button:hover {
   margin-bottom: 30px;
   color: #333;
   letter-spacing: 1px;
+}
+
+.dark-mode .category-title {
+  color: #e0e0e0;
 }
 
 /* Category buttons container */
@@ -373,9 +374,13 @@ body.dark-mode #clear-btn:hover {
 }
 
 body.dark-mode #ai-input {
-  background: rgba(255, 255, 255, 0.08);
+  background: #2a2a2a;
   color: #f0f0f0;
   border-color: #555;
+}
+
+body.dark-mode #ai-input::placeholder {
+  color: #888;
 }
 
 body.dark-mode #ai-input:focus {

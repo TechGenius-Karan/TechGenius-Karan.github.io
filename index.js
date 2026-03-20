@@ -1,119 +1,110 @@
-let quotes = [];
-let API_URL = "https://quote-generator-5qei.onrender.com";
+const API_URL = "https://quote-generator-5qei.onrender.com";
 
-let colors = [
+let quotes = [];
+let usedQuotes = [];
+let usedColours = [];
+let darkMode = false;
+let selectedCategory = null;
+
+const colors = [
   "#49B587", "#FF6F61", "#FFD700", "#6A5ACD", "#FF8C00",
   "#00CED1", "#FF69B4", "#8A2BE2", "#20B2AA", "#FF4500",
   "#00FA9A", "#FF1493"
 ];
 
-let darkColors = [
+const darkColors = [
   "#121212", "#1E1E1E", "#2C2C2C", "#3A3A3A", "#2F4F4F",
   "#36454F", "#2E2B5F", "#4B3832", "#22313F"
 ];
 
-let darkMode = false;
-let usedQuotes = [];
-let usedColours = [];
+// --- Helpers ---
 
+// Picks a random unused index from arr. Resets when all have been used,
+// so every item appears before any repeats.
+function pickWithoutRepeat(arr, usedArr) {
+  if (usedArr.length === arr.length) usedArr.length = 0;
+  const available = arr.map((_, i) => i).filter(i => !usedArr.includes(i));
+  const index = available[Math.floor(Math.random() * available.length)];
+  usedArr.push(index);
+  return index;
+}
 
-function newQuote() {
-  if (quotes.length === 0) return;
-  if (usedQuotes.length === quotes.length) {
-    usedQuotes = [];
-  }
-
-  const available = quotes.map((_, i) => i).filter(i => !usedQuotes.includes(i));
-  const quoteIndex = available[Math.floor(Math.random() * available.length)];
-  usedQuotes.push(quoteIndex);
-
-  let quote = quotes[quoteIndex];
-  document.getElementById("quote").innerHTML =
-    `"${quote.text}" <span class="author">${quote.author}</span>`;
-
-  let quoteElem = document.getElementById("quote");
-  quoteElem.classList.remove("fade"); // reset if still on
-  void quoteElem.offsetWidth; 
+// Renders a quote into #quote with a CSS fade-in animation.
+function displayQuote(text, author) {
+  const quoteElem = document.getElementById("quote");
+  quoteElem.innerHTML = `"${text}" <span class="author">${author}</span>`;
+  quoteElem.classList.remove("fade");
+  void quoteElem.offsetWidth; // force reflow so removing+adding the class restarts the animation
   quoteElem.classList.add("fade");
-
   changeBackground();
 }
 
+// --- Core functions ---
+
+function newQuote() {
+  if (quotes.length === 0) return;
+  const index = pickWithoutRepeat(quotes, usedQuotes);
+  displayQuote(quotes[index].text, quotes[index].author);
+}
+
 function changeBackground() {
-  let palette = darkMode ? darkColors : colors;
-  const available = palette.map((_, i) => i).filter(i => !usedColours.includes(i));
-  const randomIndex = available[Math.floor(Math.random() * available.length)];
-  usedColours.push(randomIndex);
-  document.body.style.backgroundColor = palette[randomIndex];
-  if (usedColours.length === palette.length) usedColours = [];
+  const palette = darkMode ? darkColors : colors;
+  const index = pickWithoutRepeat(palette, usedColours);
+  document.body.style.backgroundColor = palette[index];
 }
 
 function copyQuote() {
-  let quoteText = document.getElementById("quote").innerText; 
+  const quoteText = document.getElementById("quote").innerText;
   navigator.clipboard.writeText(quoteText).then(() => {
-    let copyBtn = document.getElementById("copybtn");
-    let oldText = copyBtn.innerText;
+    const copyBtn = document.getElementById("copybtn");
+    const oldText = copyBtn.innerText;
     copyBtn.innerText = "Copied!";
-    setTimeout(() => {
-      copyBtn.innerText = oldText;
-    }, 1500);
+    setTimeout(() => { copyBtn.innerText = oldText; }, 1500);
   });
 }
 
 function toggleMode() {
   darkMode = !darkMode;
   document.body.classList.toggle("dark-mode");
-
-  let btn = document.getElementById("modeToggle");
-  btn.classList.toggle("active");
-  let ball = document.querySelector(".toggle-ball");
-
-  ball.textContent = darkMode ? "🌞" : "🌙";
-
+  document.getElementById("modeToggle").classList.toggle("active");
+  document.querySelector(".toggle-ball").textContent = darkMode ? "🌞" : "🌙";
   document.body.style.backgroundColor = darkMode ? "#121212" : "#49B587";
 }
 
-
-//The category section
-
-let selectedCategory = null;
+// --- Category filtering ---
 
 document.querySelectorAll(".cat-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const category = btn.dataset.category;
     const isSame = selectedCategory === category;
 
-    // Clear all active states
     document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
 
     if (isSame) {
-      // Deselect → go back to random
+      // Clicking the active category again deselects it → load all quotes
       selectedCategory = null;
       fetchQuotes();
     } else {
-      // Select new category
       selectedCategory = category;
       btn.classList.add("active");
       fetchQuotes(category);
     }
-
-    console.log("Selected category:", selectedCategory);
   });
 });
 
-
-//fetching quotes from backend
+// --- Fetching quotes from the backend ---
 
 async function fetchQuotes(category = null) {
   try {
-    let url = category
+    const url = category
       ? `${API_URL}/quotes/category/${category}`
       : `${API_URL}/quotes`;
 
     const res = await fetch(url);
     quotes = await res.json();
 
-    usedQuotes = []; // reset used quotes when new data loads
+    // Reset no-repeat tracking whenever a fresh batch of quotes loads
+    usedQuotes = [];
     usedColours = [];
     newQuote();
   } catch (err) {
@@ -123,18 +114,38 @@ async function fetchQuotes(category = null) {
 
 fetchQuotes();
 
+// --- AI input helpers ---
 
 function toggleClearBtn() {
   const input = document.getElementById("ai-input");
-  const clearBtn = document.getElementById("clear-btn");
-  clearBtn.style.display = input.value.length > 0 ? "flex" : "none";
+  document.getElementById("clear-btn").style.display = input.value.length > 0 ? "flex" : "none";
 }
 
 function clearAIInput() {
-  document.getElementById("ai-input").value = "";
+  const input = document.getElementById("ai-input");
+  input.value = "";
   document.getElementById("clear-btn").style.display = "none";
-  document.getElementById("ai-input").focus();
+  input.focus();
 }
+
+// Runs a 10-second countdown on the AI button to prevent rapid re-clicks
+function startCooldown(btn) {
+  let countdown = 10;
+  btn.disabled = true;
+  btn.textContent = `Wait ${countdown}s`;
+  const timer = setInterval(() => {
+    countdown--;
+    if (countdown <= 0) {
+      clearInterval(timer);
+      btn.textContent = "Ask Gemini";
+      btn.disabled = false;
+    } else {
+      btn.textContent = `Wait ${countdown}s`;
+    }
+  }, 1000);
+}
+
+// --- AI quote generation ---
 
 async function generateAIQuote() {
   const phrase = document.getElementById("ai-input").value.trim();
@@ -159,29 +170,11 @@ async function generateAIQuote() {
       return;
     }
 
-    const quoteElem = document.getElementById("quote");
-    quoteElem.innerHTML = `"${data.text}" <span class="author">${data.author}</span>`;
-    quoteElem.classList.remove("fade");
-    void quoteElem.offsetWidth;
-    quoteElem.classList.add("fade");
-
-    changeBackground();
+    displayQuote(data.text, data.author);
   } catch (err) {
     console.error("AI quote error:", err);
     document.getElementById("quote").innerHTML = "Could not reach AI. Please try again.";
   } finally {
-    let countdown = 10;
-    aiBtn.disabled = true;
-    aiBtn.textContent = `Wait ${countdown}s`;
-    const timer = setInterval(() => {
-      countdown--;
-      if (countdown <= 0) {
-        clearInterval(timer);
-        aiBtn.textContent = "Ask Gemini";
-        aiBtn.disabled = false;
-      } else {
-        aiBtn.textContent = `Wait ${countdown}s`;
-      }
-    }, 1000);
+    startCooldown(aiBtn);
   }
 }
